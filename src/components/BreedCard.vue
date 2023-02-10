@@ -22,6 +22,7 @@
 </template>
 
 <script lang="ts">
+import { useStorage } from "../hooks/useStorage";
 import type { PropType } from "vue";
 import { defineComponent } from "vue";
 import { getThumbnailFromId } from "../lib/images";
@@ -41,14 +42,20 @@ export default defineComponent({
     };
   },
   created() {
-    getThumbnailFromId(this.cat.id)
-      .then((image: string | null) => {
-        if (!image) {
-          return;
-        }
-        this.image = image;
-      })
-      .catch();
+    const [catImage, setCatImage] = useStorage(this.cat.id);
+    if (!catImage) {
+      getThumbnailFromId(this.cat.id)
+        .then((image: string | null) => {
+          if (!image) {
+            return;
+          }
+          this.image = image;
+          setCatImage(this.image);
+        })
+        .catch();
+    } else {
+      this.image = catImage;
+    }
   },
 });
 </script>

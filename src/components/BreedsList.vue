@@ -9,6 +9,7 @@
 </template>
 
 <script lang="ts">
+import { useStorage } from "../hooks/useStorage";
 import { defineComponent } from "vue";
 import { getAllBreeds } from "../lib/breeds";
 import { Cat } from "../types/models/cat";
@@ -22,14 +23,20 @@ export default defineComponent({
     };
   },
   created() {
-    getAllBreeds()
-      .then((cats: Cat[] | null) => {
-        if (!cats) {
-          return;
-        }
-        this.cats = cats;
-      })
-      .catch();
+    const [cats, setCats] = useStorage("cats");
+    if (!cats) {
+      getAllBreeds()
+        .then((cats: Cat[] | null) => {
+          if (!cats) {
+            return;
+          }
+          this.cats = cats;
+          setCats(cats);
+        })
+        .catch();
+    } else {
+      this.cats = cats;
+    }
   },
   components: { BreedCard },
 });

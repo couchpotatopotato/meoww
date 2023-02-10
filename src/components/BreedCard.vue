@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { useStorage } from "../hooks/useStorage";
+import { useStorage } from "../contexts/useStorage";
 import type { PropType } from "vue";
 import { defineComponent } from "vue";
 import { getThumbnailFromId } from "../lib/images";

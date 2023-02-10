@@ -9,23 +9,59 @@
 </template>
 
 <script lang="ts">
-import { useStorage } from "../hooks/useStorage";
+import { useStorage } from "../contexts/useStorage";
 import { defineComponent } from "vue";
-import { getAllBreeds } from "../lib/breeds";
+import { getBreeds } from "../lib/breeds";
 import { Cat } from "../types/models/cat";
 import BreedCard from "./BreedCard.vue";
+
+const [cats, setCats] = useStorage("cats");
 
 export default defineComponent({
   name: "BreedsList",
   data() {
     return {
       cats: [] as Cat[],
+      limit: 10,
+      page: cats ? cats.length / 10 : 0,
     };
   },
+  mounted() {
+    this.scroll();
+  },
+  methods: {
+    scroll() {
+      window.onscroll = () => {
+        let bottomOfWindow =
+          Math.max(
+            window.pageYOffset,
+            document.documentElement.scrollTop,
+            document.body.scrollTop
+          ) +
+            window.innerHeight ===
+          document.documentElement.offsetHeight;
+
+        if (bottomOfWindow) {
+          this.page++;
+          this.loadMoreCats(this.limit, this.page);
+        }
+      };
+    },
+    loadMoreCats(limit: number, page: number) {
+      getBreeds(limit, page)
+        .then((cats: Cat[] | null) => {
+          if (!cats) {
+            return;
+          }
+          this.cats.push(...cats);
+          setCats(this.cats);
+        })
+        .catch();
+    },
+  },
   created() {
-    const [cats, setCats] = useStorage("cats");
     if (!cats) {
-      getAllBreeds()
+      getBreeds(this.limit, this.page)
         .then((cats: Cat[] | null) => {
           if (!cats) {
             return;

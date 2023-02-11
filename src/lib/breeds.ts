@@ -1,4 +1,4 @@
-import { Cat } from "types/models/cat";
+import { Cat } from "../types/models/cat";
 import { api } from "../utils/apiUtils";
 
 export const getAllBreeds = async (): Promise<Cat[] | null> => {
@@ -17,4 +17,9 @@ export const getBreeds = async (
     },
   });
   return response.data as Cat[] | null;
+};
+
+export const getBreed = async (breed_id: string): Promise<Cat | null> => {
+  const response = await api.get(`breeds/${breed_id}`);
+  return response.data as Cat | null;
 };

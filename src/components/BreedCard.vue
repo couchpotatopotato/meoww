@@ -3,13 +3,16 @@
     <div
       class="aspect-[672/494] relative rounded-md transform overflow-hidden shadow-[0_2px_8px_rgba(15,23,42,0.08)] bg-slate-200 dark:bg-slate-700"
     >
-      <img class="absolute inset-0 w-full h-full object-cover" :src="image" />
+      <img
+        class="absolute inset-0 w-full h-full object-cover"
+        :src="thumbnail"
+      />
     </div>
     <div class="flex flex-wrap items-center mt-6">
       <h2
         class="text-lg leading-6 text-slate-900 font-semibold group-hover:text-sky-500"
       >
-        <router-link :to="cat.id"
+        <router-link :to="'breeds/' + cat.id"
           ><span class="absolute inset-0 rounded-3xl"></span
           >{{ cat.name }}</router-link
         >
@@ -25,8 +28,9 @@
 import { useStorage } from "../contexts/useStorage";
 import type { PropType } from "vue";
 import { defineComponent } from "vue";
-import { getThumbnailFromId } from "../lib/images";
+import { getImagesFromId } from "../lib/images";
 import { Cat } from "../types/models/cat";
+import { Image } from "../types/models/images";
 
 export default defineComponent({
   name: "BreedsCard",
@@ -38,23 +42,26 @@ export default defineComponent({
   },
   data() {
     return {
-      image: "",
+      thumbnail: "",
+      images: [] as Image[],
     };
   },
   created() {
-    const [catImage, setCatImage] = useStorage(this.cat.id);
-    if (!catImage) {
-      getThumbnailFromId(this.cat.id)
-        .then((image: string | null) => {
-          if (!image) {
+    const [catImages, setCatImage] = useStorage(this.cat.id);
+    if (!catImages) {
+      getImagesFromId(this.cat.id)
+        .then((images: Image[] | null) => {
+          if (!images) {
             return;
           }
-          this.image = image;
-          setCatImage(this.image);
+          this.images = images;
+          setCatImage(this.images);
+          this.thumbnail = this.images[0]?.["url"];
         })
         .catch();
     } else {
-      this.image = catImage;
+      this.images = catImages;
+      this.thumbnail = this.images[0]?.["url"];
     }
   },
 });

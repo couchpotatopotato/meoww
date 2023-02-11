@@ -14,6 +14,7 @@ import { defineComponent } from "vue";
 import { getBreeds } from "../lib/breeds";
 import { Cat } from "../types/models/cat";
 import BreedCard from "./BreedCard.vue";
+import { debounce } from "../utils/debounce";
 
 const [cats, setCats] = useStorage("cats");
 
@@ -31,7 +32,7 @@ export default defineComponent({
   },
   methods: {
     scroll() {
-      window.onscroll = () => {
+      window.onscroll = debounce(() => {
         let bottomOfWindow =
           Math.max(
             window.pageYOffset,
@@ -45,7 +46,7 @@ export default defineComponent({
           this.page++;
           this.loadMoreCats(this.limit, this.page);
         }
-      };
+      }, 200);
     },
     loadMoreCats(limit: number, page: number) {
       getBreeds(limit, page)

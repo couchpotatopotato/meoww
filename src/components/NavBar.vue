@@ -47,10 +47,6 @@ export default defineComponent({
           name: "Breeds",
           route: "/",
         },
-        {
-          name: "Favorites",
-          route: "/favorites",
-        },
       ],
     };
   },

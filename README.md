@@ -94,7 +94,7 @@ Contains contexts providing hooks that can be used by Vue components.
 
 Contains API function calls.
 
-### `router/` directory (client)
+### `router/` directory
 
 Defines routes used in the application.
 
